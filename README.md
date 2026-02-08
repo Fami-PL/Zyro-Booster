@@ -34,17 +34,18 @@
 
 ### Prerequisites
 - **Node.js** (v18 or newer)
-- **Linux** (Debian, Ubuntu, Fedora, Arch, etc.)
+- **Linux** (Debian, Ubuntu, Fedora, Arch, etc.) or **Android (Termux)**
 
 ### 1-Click Installers
 
-We provide automated scripts for major Linux distributions:
+We provide automated scripts for major platforms:
 
-| Distro | Command |
+| Platform | Command |
 | :--- | :--- |
 | **Debian / Ubuntu / Kali** | `./install_debian.sh` |
 | **Fedora / RHEL / CentOS** | `./install_fedora.sh` |
 | **Arch Linux / Manjaro**   | `./install_arch.sh` |
+| **Android (Termux)**       | `./install_termux.sh` |
 
 **Manual Installation:**
 ```bash
