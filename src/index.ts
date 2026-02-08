@@ -134,6 +134,33 @@ async function handleLoginFlow(user: string, pass: string): Promise<void> {
     });
 }
 
+async function monitorStatus() {
+    let dashboardActive = true;
+    
+    const refresh = () => {
+        if (!dashboardActive) return;
+        printHeader();
+        console.log(chalk.cyan("    [MONITORING] Booster is running in background."));
+        console.log(chalk.white("    Current Games: ") + chalk.yellow(config.games.join(', ')));
+        console.log(chalk.gray("\n    Press ENTER to return to main menu..."));
+    };
+
+    refresh();
+    const interval = setInterval(refresh, 1000);
+
+    const rl = inquirer.createPromptModule();
+    await rl([
+        {
+            type: 'input',
+            name: 'return',
+            message: ''
+        }
+    ]);
+
+    dashboardActive = false;
+    clearInterval(interval);
+}
+
 async function main() {
     // Attempt auto-login if creds exist?
     // Maybe not auto, but pre-fetch user.
@@ -151,7 +178,10 @@ async function main() {
             choices.push('Login');
         } else {
             if (!isBoosting) choices.push('Start Boosting');
-            if (isBoosting) choices.push('Stop Boosting');
+            if (isBoosting) {
+                choices.push('Monitor Status');
+                choices.push('Stop Boosting');
+            }
             choices.push(personaState === 1 ? 'Go Invisible' : 'Go Online');
         }
 
@@ -199,7 +229,11 @@ async function main() {
                 bot.startBoosting(config.games);
                 isBoosting = true;
                 startTime = Date.now();
+                await monitorStatus();
             }
+        }
+        else if (action === 'Monitor Status') {
+            await monitorStatus();
         }
         else if (action === 'Stop Boosting') {
             bot.stopBoosting();

@@ -1,0 +1,7 @@
+node_modules/
+dist/
+config.json
+last_user.txt
+yarn-error.log
+npm-debug.log
+.env
