@@ -12,21 +12,18 @@
 ## ✨ Features
 
 - **🔐 Secure Authentication**: 
-  - Uses system keychain (**libsecret**, **Keytar**) for enterprise-grade security.
+  - Uses system keychain (**Windows Credential Manager**, **Keychain**, **libsecret**) for security.
   - Optional `.env` file fallback for headless servers.
 - **🎮 Multi-Game Boosting**: 
-  - Boost **CS2**, **TF2**, **Dota 2**, **Rust**, and any other Steam game simultaneously.
-  - Automatically recognizes popular App IDs.
+  - Boost **CS2**, **TF2**, **Dota 2**, **Rust**, and more simultaneously.
 - **📡 Discord Webhooks**: 
-  - **Live Status Updates**: Get notified about bot status every X hours.
-  - **Anti-Spam Error Logging**: Smart deduplication prevents error spam.
+  - Live Status Updates + Anti-Spam Error Logging.
 - **🔄 Auto-Reconnect System**: 
-  - Smart 5-minute retry loop ensures 24/7 uptime even after connection drops.
+  - Smart 5-minute retry loop ensures 24/7 uptime.
 - **🕵️ Visibility Control**: 
-  - Toggle between **Online** and **Invisible** mode while boosting.
+  - Toggle between **Online** and **Invisible** mode.
 - **⚡ Interactive CLI**: 
-  - Beautiful, cursor-based menu using `inquirer`.
-  - Real-time **UPTIME** display and status header.
+  - Beautiful menu with real-time **UPTIME** display.
 
 ---
 
@@ -34,78 +31,38 @@
 
 ### Prerequisites
 - **Node.js** (v18 or newer)
-- **Linux** (Debian, Ubuntu, Fedora, Arch, etc.) or **Android (Termux)**
+- **Operating System**: Windows, Linux, or Android (Termux)
 
-### 1-Click Installers
+### 🚀 Quick Start (1-Click)
 
-We provide automated scripts for major platforms:
-
-| Platform | Command |
+| Platform | Command / Script |
 | :--- | :--- |
+| **Windows**                | Double-click `run.bat` |
 | **Debian / Ubuntu / Kali** | `./install_debian.sh` |
 | **Fedora / RHEL / CentOS** | `./install_fedora.sh` |
 | **Arch Linux / Manjaro**   | `./install_arch.sh` |
 | **Android (Termux)**       | `./install_termux.sh` |
 
-**Manual Installation:**
+**Manual Installation (Any OS):**
 ```bash
-# 1. Install dependencies
 npm install
-
-# 2. Build the project
 npm run build
-
-# 3. Start
-./run.sh
+npm start
 ```
 
 ---
 
 ## 🚀 Usage
 
-Run the booster with:
-```bash
-./run.sh
-```
-
-### Main Menu
-
-1.  **Login**  
-    Securely log in to Steam. Supports Steam Guard (Email & Mobile App). Credits are saved securely.
-
-2.  **Start Boosting**  
-    Begins idling the configured games. The header will update to show `STATUS: [PLAYING: CS2, TF2]`.
-
-3.  **Stop Boosting**  
-    Stops the idling process without logging out.
-
-4.  **Go Invisible / Online**  
-    Change your community status instantly.
-
-5.  **Settings**  
-    - **Edit Games**: Add game App IDs (e.g., `730, 440`).
-    - **Set Webhook**: Add your Discord Webhook URL for notifications.
-    - **Set Webhook Interval**: Configure how often you want status updates (e.g., every 6 hours).
+1.  **Login**: Supports Steam Guard (Email & Mobile). Credentials saved securely.
+2.  **Start Boosting**: idling begins. Status header shows `PLAYING: [Games]`.
+3.  **Settings**: Configure Game IDs and Discord Webhook.
 
 ---
 
 ## ⚙️ Configuration
-
-Your settings are stored locally in `config.json`.
-Credentials are stored **encrypted** in your system's keychain.
+Settings in `config.json`. Passwords are encrypted in your OS keychain.
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to open an issue or submit a Pull Request.
-
-1. Fork the repository.
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request.
-
----
-
-**Disclaimer**: This tool is for educational purposes. Use at your own risk.
+**Disclaimer**: For educational purposes only. Use at your own risk.
