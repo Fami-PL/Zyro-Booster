@@ -31,24 +31,76 @@ export class Logger {
 
 let lastErrorMessage = '';
 
-export async function sendWebhook(url: string, title: string, message: string, color: number = 0x00ff00): Promise<void> {
+export async function sendWebhook(
+    url: string,
+    title: string,
+    message: string,
+    color: number = 0x00ff00,
+    fields?: Array<{ name: string, value: string, inline?: boolean }>,
+    ping: string = ''
+): Promise<void> {
     if (title === 'Steam Client Error' && message === lastErrorMessage) return;
     if (title === 'Steam Client Error') lastErrorMessage = message;
 
     if (!url || !url.startsWith('http')) return;
 
+    // Discord Steam Icons
+    const STEAM_ICON = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/512px-Steam_icon_logo.svg.png';
+    const BOOSTER_ICON = 'https://raw.githubusercontent.com/SteamDatabase/SteamDatabase/master/icons/apple-touch-icon.png';
+
+    // Emoji mapping for different message types
+    const emojiMap: { [key: string]: string } = {
+        'Booster Started': '🚀',
+        'Booster Stopped': '⏹️',
+        'Status Update': '📊',
+        'Steam Client Error': '❌',
+        'Connection Lost': '⚠️',
+        'Login Success': '✅'
+    };
+
+    const emoji = emojiMap[title] || '📢';
+
+    // Create thumbnail URL based on status
+    const thumbnailMap: { [key: string]: string } = {
+        'Booster Started': BOOSTER_ICON,
+        'Booster Stopped': 'https://cdn-icons-png.flaticon.com/512/5996/5996660.png',
+        'Status Update': 'https://cdn-icons-png.flaticon.com/512/3524/3524388.png',
+        'Steam Client Error': 'https://cdn-icons-png.flaticon.com/512/753/753345.png',
+        'Connection Lost': 'https://cdn-icons-png.flaticon.com/512/4201/4201973.png'
+    };
+
     try {
+        const embed: any = {
+            author: {
+                name: 'Zyro Booster',
+                icon_url: STEAM_ICON
+            },
+            title: `${emoji} ${title}`,
+            description: message,
+            color: color,
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: 'Zyro-Booster • Steam Hour Booster',
+                icon_url: STEAM_ICON
+            }
+        };
+
+        // Add thumbnail if available
+        if (thumbnailMap[title]) {
+            embed.thumbnail = {
+                url: thumbnailMap[title]
+            };
+        }
+
+        // Add fields if provided
+        if (fields && fields.length > 0) {
+            embed.fields = fields;
+        }
+
         await axios.post(url, {
-            embeds: [{
-                title: title,
-                description: message,
-                color: color,
-                footer: {
-                    text: `Zyro-Booster • ${new Date().toISOString()}`
-                }
-            }]
+            content: ping ? `<@${ping.replace(/[<@&>]/g, '')}>` : '',
+            embeds: [embed]
         });
-        // Logger.info('Webhook sent successfully.');
     } catch (error: any) {
         Logger.warn(`Failed to send webhook: ${error.message}`);
     }

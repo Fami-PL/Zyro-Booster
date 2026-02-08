@@ -6,6 +6,7 @@ export class ZyroBot {
     private isBoosting: boolean = false;
     private games: number[] = [730]; // Default CS2
     private webhookUrl: string = '';
+    private webhookPing: string = '';
     private personaState: number = 1; // Default Online (1)
 
     constructor() {
@@ -27,7 +28,7 @@ export class ZyroBot {
         this.client.on('error', (err: any) => {
             Logger.error(`Steam Client Error: ${err.message}`);
             if (this.webhookUrl) {
-                sendWebhook(this.webhookUrl, 'Steam Client Error', `Error: ${err.message}`, 0xff0000);
+                sendWebhook(this.webhookUrl, 'Steam Client Error', `Error: ${err.message}`, 0xff0000, undefined, this.webhookPing);
             }
             this.triggerReconnect();
         });
@@ -45,6 +46,10 @@ export class ZyroBot {
 
     public setWebhook(url: string) {
         this.webhookUrl = url;
+    }
+
+    public setWebhookPing(ping: string) {
+        this.webhookPing = ping;
     }
 
     public setGames(games: number[]) {
@@ -77,7 +82,24 @@ export class ZyroBot {
         this.client.gamesPlayed(gameIds);
 
         if (this.webhookUrl) {
-            sendWebhook(this.webhookUrl, 'Booster Started', `Boosting active for games: ${gameIds.join(', ')}`, 0x00ff00);
+            const gameNames = gameIds.map(id => {
+                const names: { [key: number]: string } = { 730: 'CS2', 570: 'Dota 2', 440: 'TF2', 252490: 'Rust' };
+                return names[id] || `Game ${id}`;
+            });
+
+            sendWebhook(
+                this.webhookUrl,
+                'Booster Started',
+                `Successfully started boosting session!`,
+                0x00ff88,
+                [
+                    { name: '🎮 Games', value: gameNames.join(', '), inline: false },
+                    { name: '🆔 Game IDs', value: gameIds.join(', '), inline: false },
+                    { name: '👁️ Persona State', value: this.personaState === 7 ? 'Invisible' : 'Online', inline: true },
+                    { name: '⏰ Started At', value: new Date().toLocaleString(), inline: true }
+                ],
+                this.webhookPing
+            );
         }
         this.restartInterval();
     }
@@ -88,7 +110,16 @@ export class ZyroBot {
         Logger.info('Boosting stopped.');
 
         if (this.webhookUrl) {
-            sendWebhook(this.webhookUrl, 'Booster Stopped', 'Boosting has been stopped.', 0xffff00);
+            sendWebhook(
+                this.webhookUrl,
+                'Booster Stopped',
+                'Boosting session has been stopped.',
+                0xffaa00,
+                [
+                    { name: '⏰ Stopped At', value: new Date().toLocaleString(), inline: false }
+                ],
+                this.webhookPing
+            );
         }
         if (this.intervalId) clearInterval(this.intervalId);
     }
@@ -123,7 +154,7 @@ export class ZyroBot {
         Logger.warn(`Connection lost! Attempting to reconnect in 5 minutes...`);
 
         if (this.webhookUrl) {
-            sendWebhook(this.webhookUrl, 'Connection Lost', 'Steam connection lost. Auto-reconnecting in 5 minutes...', 0xffaa00);
+            sendWebhook(this.webhookUrl, 'Connection Lost', 'Steam connection lost. Auto-reconnecting in 5 minutes...', 0xffaa00, undefined, this.webhookPing);
         }
 
         this.reconnectTimer = setTimeout(() => {
@@ -147,11 +178,22 @@ export class ZyroBot {
             Logger.info(`Webhook status updates enabled: Every ${this.webhookInterval} hour(s).`);
             this.intervalId = setInterval(() => {
                 if (this.isBoosting && this.webhookUrl) {
+                    const gameNames = this.games.map(id => {
+                        const names: { [key: number]: string } = { 730: 'CS2', 570: 'Dota 2', 440: 'TF2', 252490: 'Rust' };
+                        return names[id] || `Game ${id}`;
+                    });
+
                     sendWebhook(
                         this.webhookUrl,
                         'Status Update',
-                        `Still boosting games: ${this.games.join(', ')}.\nPersona State: ${this.personaState === 7 ? 'Invisible' : 'Online'}`,
-                        0x00ffff
+                        `Boosting session is still active and running smoothly.`,
+                        0x00d4ff,
+                        [
+                            { name: '🎮 Active Games', value: gameNames.join(', '), inline: false },
+                            { name: '👁️ Persona State', value: this.personaState === 7 ? 'Invisible' : 'Online', inline: true },
+                            { name: '⏰ Update Time', value: new Date().toLocaleString(), inline: true }
+                        ],
+                        this.webhookPing
                     );
                 }
             }, this.webhookInterval * 3600 * 1000);
